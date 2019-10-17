@@ -443,7 +443,7 @@ class AjaxController extends Controller
                 } else
                     $psArray[$data["identifier"]["obPropId"]] = $AssessmentHistory["property"][0]["assessmenthistory"];
             }
-            dd($AVMResult["property"]);
+            
             $fullName = 'Home Owner';
             if (array_key_exists('owner1', $AVMResult["property"][0]["owner"])) {
                 $fullName = '';

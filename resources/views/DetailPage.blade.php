@@ -228,7 +228,8 @@
             const myOptions = {
                 enableHighAccuracy: true,
                 zoom: 13,
-                center: new google.maps.LatLng( {{$lat}} ,{{$longi}})
+                center: new google.maps.LatLng( {{$lat}} ,{{$longi}}),
+                scrollwheel:true
         };
             const map = new google.maps.Map(document.getElementById("Mymap"), myOptions);
 

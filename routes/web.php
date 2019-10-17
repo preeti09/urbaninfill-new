@@ -12,6 +12,11 @@
 */
 
 Route::get('/', 'homeController@home');
+
+//Added by bhavana
+Route::get('/test_map', 'homeController@test_map');
+Route::get('/api_test', 'homeController@test');
+////////
 Route::get('/hpl2', 'homeController@homehpl2');
 Route::get('/typesearch', 'homeController@typesearch');
 Route::get('/location','homeController@location');

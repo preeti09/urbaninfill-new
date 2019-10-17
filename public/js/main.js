@@ -86,7 +86,8 @@ $(document).ready(function () {
         const line1 = $(this).attr("line1");
         const line2 = $(this).attr("line2");
         // const oneline = $(this).attr("oneline");
-        const oneline =line1+','+line2;
+        const oneline =line1+","+line2;
+        console.log(oneline);
         gline1 = line1;
         gline2 = line2;
         check_visited_links(line1 + line2);
@@ -99,18 +100,21 @@ $(document).ready(function () {
 
         const myOptions = {
             zoom: 19,
-            center: new google.maps.LatLng(lat, long)
+            center: new google.maps.LatLng(lat, long),
+            scrollwheel:true
         };
-        const map = new google.maps.Map(document.getElementById("Modalmap"), myOptions);
+        const map2 = new google.maps.Map(document.getElementById("Modalmap"), myOptions);
 
         //marker;
-        //console.log(locations);
+        
         geocoder.geocode( { 'address': oneline}, function(results, status) {
             if (status == 'OK') {
-                map.setCenter(results[0].geometry.location);
+                // console.log(results[0].geometry.location.lat(),results[0].geometry.location.lng());
+                // map2.setCenter(results[0].geometry.location);
                 var marker = new google.maps.Marker({
-                    map: map,
-                    position: results[0].geometry.location,
+                    map: map2,
+                    // position: results[0].geometry.location,
+                    position: new google.maps.LatLng(lat, long),
                     animation: google.maps.Animation.DROP
                 });
             } else {
@@ -903,6 +907,7 @@ function postData(url = ``, data = {}, isVacant) {
                 if (totalPages == data.status.page) {
 
                 }
+                console.log(locationLatLng.length);
                 f(location);
 
             }
@@ -1002,6 +1007,7 @@ function f(locations) {
     swiper.slideTo(swiper.initialSlide);
     swiper.update();
     for (let i = 0; i < locations.length; i++) {
+        
         var markers = new google.maps.Marker({
             position: new google.maps.LatLng(locations[i][0], locations[i][1]),
             animation: google.maps.Animation.DROP,
@@ -1016,6 +1022,7 @@ function f(locations) {
                 swiper.updateSlidesClasses();
             }
         })(markers, i))
+       
         markers.set("id", homemarkers.length)
         homemarkers.push(markers);
         // focusonmarker(0);
@@ -1158,7 +1165,8 @@ function initMap(finalarray, lat, lng) {
     map = new google.maps.Map(document.getElementById('map'), {
         zoom: 12,
         center: new google.maps.LatLng(lat, lng),
-        mapTypeId: google.maps.MapTypeId.ROADMAP
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        scrollwheel:true
     });
 
     var infowindow = new google.maps.InfoWindow();
@@ -1594,7 +1602,10 @@ function init() {
     var tmp;
     var myOptions = {
         zoom: 13,
-        center: new google.maps.LatLng(lat, lng)
+        center: new google.maps.LatLng(lat, lng),
+        scrollwheel : true,
+        streetViewControl: true,
+
     };
     map = new google.maps.Map(document.getElementById("map"), myOptions);
 

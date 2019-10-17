@@ -19,6 +19,66 @@ class HomeController extends Controller
         $this->middleware('auth');
     }
 
+    //Added by bhavana
+    public function test_map(){
+        return view('demo');
+    }
+
+    //Added by bhavana
+    public function test(){
+        $curl = curl_init(); 
+        $lat = 37.6949867;
+        $long = -97.22468409999999;
+        $postalcode = 67206; //32097;
+        $geo_key = "SB0000078833";
+        $polys = [];
+        $attomId = "247959472";
+        curl_setopt_array($curl, array( 
+            // CURLOPT_URL => "https://api.gateway.attomdata.com/areaapi/v2.0.0/boundary/detail?AreaId=".$geo_key,
+            // CURLOPT_URL => "https://api.gateway.attomdata.com/areaapi/v2.0.0/hierarchy/lookup?latitude=" . $lat . "&longitude=" . $long,
+            // CURLOPT_URL => "https://api.gateway.attomdata.com/propertyapi/v1.0.0/assessment/detail?postalcode=" . $postalcode,
+            CURLOPT_URL => "https://api.gateway.attomdata.com/areaapi/v2.0.0/hierarchy/lookup?latitude=39.296864&longitude=-75.613574",
+            // CURLOPT_URL => "https://api.gateway.attomdata.com/propertyapi/v1.0.0/allevents/detail?attomId=".$attomId,
+            // CURLOPT_URL => "https://api.gateway.attomdata.com/propertyapi/v1.0.0/allevents/snapshot?fips=08031&APN=0914501010000",
+            // CURLOPT_URL => "https://api.gateway.attomdata.com/propertyapi/v1.0.0/property/detail?fips=08031&APN=0914501010000",
+            // CURLOPT_URL => "https://api.gateway.attomdata.com/propertyapi/v1.0.0/property/detail?address=Portland%2C%20OR%2097217%2C%20USA",
+            CURLOPT_RETURNTRANSFER => true, 
+            CURLOPT_ENCODING => "", 
+            CURLOPT_MAXREDIRS => 10, 
+            CURLOPT_TIMEOUT => 30, 
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1, 
+            CURLOPT_CUSTOMREQUEST => "GET", 
+            CURLOPT_HTTPHEADER => array( 
+                "accept: application/json", 
+                "apikey: 48ed381483aabf5758717c7aa023980f", 
+            ), 
+        )); 
+        $response = curl_exec($curl); 
+        dd($response);
+        $err = curl_error($curl); 
+        curl_close($curl); 
+        if ($err) { 
+            dd("cURL Error #:" . $err); 
+        } else { 
+            // $lat = -71.577620;
+            /*$longi = 41.66895;
+            $data = json_decode($response);
+            if(isset($data->response)){
+                $polys = $data->response->result->package->item;
+            }else{
+                $polys = array();
+            }*/
+            // $polys = $data->property[0]->location;
+              
+            /*$lat = $polys->latitude;
+            $long = $polys->longitude;
+            $geoId = $polys->geoid;
+            $polys = $data->response->result->package->item; */
+            
+        }
+        
+    }
+
     /**
      * Show the application dashboard.
      *

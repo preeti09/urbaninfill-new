@@ -8,12 +8,9 @@ $("#incomeDiv").hide();
 $("#poiContent").hide();
 $(document).on("click", '.saveBtn', function (event) {
 
-
     const line1 = $(this).attr("line1");
     const line2 = $(this).attr("line2");
-
     saveProperty(line1, line2);
-
 })
 
 function saveProperty(line1, line2) {
@@ -489,17 +486,17 @@ function getlist(postalcode,lat, lng, isVacant) {
                 return
             } else {
                 totalPages = Math.ceil(data);
-                console.log(data);
+                // console.log(data);
                 searchCount = 0;
                 $("#poiContent").hide();
-                // for (let i = 1; i <= totalPages; i++) {
+                for (let i = 1; i <= totalPages; i++) {
                     postData('/allpropertiesList', {
                         lat: lat,
                         lng: lng,
-                        page: 1,
+                        page: i,
                         zip: postalcode
                     }, isVacant);
-                // }
+                }
                 if(totalPages == 0 )
                 {
                     $("#searchloading").fadeOut("slow", function () {
@@ -715,11 +712,10 @@ function postData(url = ``, data = {}, isVacant) {
             count_request_completed++;
             let validPropertyList = [];
             let location = [];
-            totalPages = data.property.length;
-
+            
             if (data) {
                 bar1.set((count_request_completed / parseInt(totalPages)) * 100);
-                if (count_request_completed <= totalPages) {
+                if (count_request_completed == totalPages) {
                     $("#searchloading").fadeOut("slow", function () {
 
                         $('#searchloading').css("display", "none");
@@ -841,7 +837,7 @@ function postData(url = ``, data = {}, isVacant) {
                                 swiper.appendSlide(text);
                                 validPropertyList.push(text);
                                 location.push([property["location"]['latitude'], property["location"]['longitude'], property['address']['oneLine']]);
-                                locationLatLng.push([property["location"]['latitude'], property["location"]['longitude'], property['address']['oneLine']]);
+                                locationLatLng.push([property["location"]['latitude'], property["location"]['longitude'], property['address']['oneLine'],property["address"]["line1"],property["address"]["line2"]]);
                             } /*else if (result2) {
                                 var text = '<div class="swiper-slide" ajaxlink= "/getOwnerDetail/'+property["address"]["line1"]+'/' +property["address"]["line2"]+'"\>' +
                                     '<div class="box selectPOI" id="5">' +
@@ -907,7 +903,7 @@ function postData(url = ``, data = {}, isVacant) {
                 if (totalPages == data.status.page) {
 
                 }
-                console.log(locationLatLng.length);
+                // console.log(locationLatLng.length);
                 f(location);
 
             }
@@ -994,7 +990,8 @@ var bounds;
 var loc;
 function f(locations) {
     // swiper.init();
-    console.log(locations.length);
+    console.log(locations.length,"locations");
+    console.log(locationLatLng.length,"locationLatLng");
     if(locations.length >= 1){
         lat = locations[1][0];
         lng= locations[1][1];
@@ -1022,16 +1019,16 @@ function f(locations) {
                 swiper.updateSlidesClasses();
             }
         })(markers, i))
-       
         markers.set("id", homemarkers.length)
         homemarkers.push(markers);
+        
         // focusonmarker(0);
-        $("#searchCount").text("Property Count :" + i);
+        // $("#searchCount").text("Property Count :" + i);
     }
-    $("#searchCount").text("Property Count :" + locations.length);
+    // $("#searchCount").text("Property Count :" + locations.length);
 
     map.panToBounds(bounds);
-
+    console.log(homemarkers.length,"homemarkers");
 }
 
 function focusonmarker(i) {
@@ -1576,20 +1573,21 @@ function deleteAllShape() {
 function resetMarker(){
     deleteAllShape();
     $('.swiper-wrapper').empty();
-    console.log(locationLatLng.length);
+    
     f(locationLatLng);
+    $("#searchCount").text("Property Count :" + locationLatLng.length);
     count = locationLatLng.length;
     for(j =0 ;j < count ;j++){
         var text = '<div class="swiper-slide" style="height: 100px;">' +
-            '<div class="box selectPOI">' +
-            '<span class="h3 hotlineLabel ' + "visited" + '" target="_blank" lat ="' + locationLatLng[j][0] + '" long = "' + locationLatLng[j][1] + '" line1 = "' + encodeURI(locationLatLng[j][2]) + '" line2="' + encodeURI(locationLatLng[j][2]) + '" > Hot Property ('+locationLatLng[j][2]+') </span>' +
-            '<div class="float-right">' +
-            '<input type="checkbox" name="selectedItem" class="selectedProperty" aria-label="Checkbox for following text input">' +
-            '<button type="button" class="saveBtn btn btn-link"  line1 = "' + encodeURI(locationLatLng[j][2]) + '" line2="' + encodeURI(locationLatLng[j][2]) + '" style="padding: 5px;"><i class="fas fa-save" style="color: black;"></i></button>' +
-            '</div>' +
-            '<div class="float-left">' +
-            '<img width="250px" src="https://maps.googleapis.com/maps/api/streetview?size=250x250&location=' + locationLatLng[j][0] + ',' + locationLatLng[j][1] + '&pitch=-0.76&key=AIzaSyAInrucxqh4SXD1SZcpjFIZq9EnDjD-k74" alt="">' +
-            '</div></div></div>';
+                    '<div class="box selectPOI">' +
+                    '<span class="h3 hotlineLabel ' + "visited" + '" target="_blank" lat ="' + locationLatLng[j][0] + '" long = "' + locationLatLng[j][1] + '" line1 = "' + encodeURI(locationLatLng[j][3]) + '" line2="' + encodeURI(locationLatLng[j][4]) + '"oneline="' + (locationLatLng[j][2]).replace( '#', "") + '" > Hot Property </span>' +
+                    '<div class="float-right">' +
+                    '<input type="checkbox" name="selectedItem" class="selectedProperty" aria-label="Checkbox for following text input">' +
+                    '<button type="button" class="saveBtn btn btn-link"  line1 = "' + encodeURI(locationLatLng[j][2]) + '" line2="' + encodeURI(locationLatLng[j][2]) + '" style="padding: 5px;"><i class="fas fa-save" style="color: black;"></i></button>' +
+                    '</div>' +
+                    '<div class="float-left">' +
+                    '<img width="250px" src="https://maps.googleapis.com/maps/api/streetview?size=250x250&location=' + locationLatLng[j][2] + '&pitch=-0.76&key=AIzaSyAInrucxqh4SXD1SZcpjFIZq9EnDjD-k74" alt="">' +
+                    '</div></div></div>';
         swiper.appendSlide(text);
     }
     
@@ -1687,13 +1685,13 @@ function init() {
                     });
                     var text = '<div class="swiper-slide" style="height: 100px;">' +
                         '<div class="box selectPOI">' +
-                        '<span class="h3 hotlineLabel ' + "visited" + '" target="_blank" lat ="' + locationLatLng[j][0] + '" long = "' + locationLatLng[j][1] + '" line1 = "' + encodeURI(locationLatLng[j][2]) + '" line2="' + encodeURI(locationLatLng[j][2]) + '"oneline="' + (locationLatLng[j][2]).replace( '#', "") + '" > Hot Property </span>' +
+                        '<span class="h3 hotlineLabel ' + "visited" + '" target="_blank" lat ="' + locationLatLng[j][0] + '" long = "' + locationLatLng[j][1] + '" line1 = "' + encodeURI(locationLatLng[j][3]) + '" line2="' + encodeURI(locationLatLng[j][4]) + '"oneline="' + (locationLatLng[j][2]).replace( '#', "") + '" > Hot Property </span>' +
                         '<div class="float-right">' +
                         '<input type="checkbox" name="selectedItem" class="selectedProperty" aria-label="Checkbox for following text input">' +
                         '<button type="button" class="saveBtn btn btn-link"  line1 = "' + encodeURI(locationLatLng[j][2]) + '" line2="' + encodeURI(locationLatLng[j][2]) + '" style="padding: 5px;"><i class="fas fa-save" style="color: black;"></i></button>' +
                         '</div>' +
                         '<div class="float-left">' +
-                        '<img width="250px" src="https://maps.googleapis.com/maps/api/streetview?size=250x250&location=' + locationLatLng[j][0] + ',' + locationLatLng[j][1] + '&pitch=-0.76&key=AIzaSyAInrucxqh4SXD1SZcpjFIZq9EnDjD-k74" alt="">' +
+                        '<img width="250px" src="https://maps.googleapis.com/maps/api/streetview?size=250x250&location=' + locationLatLng[j][2] + '&pitch=-0.76&key=AIzaSyAInrucxqh4SXD1SZcpjFIZq9EnDjD-k74" alt="">' +
                         '</div></div></div>';
                     swiper.appendSlide(text);
                     console.log(locationLatLng[j][2]);
@@ -1731,13 +1729,13 @@ function init() {
                     });
                     var text = '<div class="swiper-slide" style="height: 100px;">' +
                         '<div class="box selectPOI">' +
-                        '<span class="h3 hotlineLabel ' + "visited" + '" target="_blank" lat ="' + locationLatLng[j][0] + '" long = "' + locationLatLng[j][1] + '" line1 = "' + encodeURI(locationLatLng[j][2]) + '" line2="' + encodeURI(locationLatLng[j][2]) + '"oneline="' + (locationLatLng[j][2]).replace( '#', "") + '" > Hot Property </span>' +
+                        '<span class="h3 hotlineLabel ' + "visited" + '" target="_blank" lat ="' + locationLatLng[j][0] + '" long = "' + locationLatLng[j][1] + '" line1 = "' + encodeURI(locationLatLng[j][3]) + '" line2="' + encodeURI(locationLatLng[j][4]) + '"oneline="' + (locationLatLng[j][2]).replace( '#', "") + '" > Hot Property </span>' +
                         '<div class="float-right">' +
                         '<input type="checkbox" name="selectedItem" class="selectedProperty" aria-label="Checkbox for following text input">' +
                         '<button type="button" class="saveBtn btn btn-link"  line1 = "' + encodeURI(locationLatLng[j][2]) + '" line2="' + encodeURI(locationLatLng[j][2]) + '" style="padding: 5px;"><i class="fas fa-save" style="color: black;"></i></button>' +
                         '</div>' +
                         '<div class="float-left">' +
-                        '<img width="250px" src="https://maps.googleapis.com/maps/api/streetview?size=250x250&location=' + locationLatLng[j][0] + ',' + locationLatLng[j][1] + '&pitch=-0.76&key=AIzaSyAInrucxqh4SXD1SZcpjFIZq9EnDjD-k74" alt="">' +
+                        '<img width="250px" src="https://maps.googleapis.com/maps/api/streetview?size=250x250&location=' + locationLatLng[j][2] + '&pitch=-0.76&key=AIzaSyAInrucxqh4SXD1SZcpjFIZq9EnDjD-k74" alt="">' +
                         '</div></div></div>';
                     swiper.appendSlide(text);
                     console.log(locationLatLng[j][2]);
@@ -1777,13 +1775,13 @@ function init() {
                     });
                     var text = '<div class="swiper-slide" style="height: 100px;">' +
                         '<div class="box selectPOI">' +
-                        '<span class="h3 hotlineLabel ' + "visited" + '" target="_blank" lat ="' + locationLatLng[j][0] + '" long = "' + locationLatLng[j][1] + '" line1 = "' + encodeURI(locationLatLng[j][2]) + '" line2="' + encodeURI(locationLatLng[j][2]) + '"oneline="' + (locationLatLng[j][2]).replace( '#', "") + '" > Hot Property </span>' +
+                        '<span class="h3 hotlineLabel ' + "visited" + '" target="_blank" lat ="' + locationLatLng[j][0] + '" long = "' + locationLatLng[j][1] + '" line1 = "' + encodeURI(locationLatLng[j][3]) + '" line2="' + encodeURI(locationLatLng[j][4]) + '"oneline="' + (locationLatLng[j][2]).replace( '#', "") + '" > Hot Property </span>' +
                         '<div class="float-right">' +
                         '<input type="checkbox" name="selectedItem" class="selectedProperty" aria-label="Checkbox for following text input">' +
                         '<button type="button" class="saveBtn btn btn-link"  line1 = "' + encodeURI(locationLatLng[j][2]) + '" line2="' + encodeURI(locationLatLng[j][2]) + '" style="padding: 5px;"><i class="fas fa-save" style="color: black;"></i></button>' +
                         '</div>' +
                         '<div class="float-left">' +
-                        '<img width="250px" src="https://maps.googleapis.com/maps/api/streetview?size=250x250&location=' + locationLatLng[j][0] + ',' + locationLatLng[j][1] + '&pitch=-0.76&key=AIzaSyAInrucxqh4SXD1SZcpjFIZq9EnDjD-k74" alt="">' +
+                        '<img width="250px" src="https://maps.googleapis.com/maps/api/streetview?size=250x250&location=' + locationLatLng[j][2] + '&pitch=-0.76&key=AIzaSyAInrucxqh4SXD1SZcpjFIZq9EnDjD-k74" alt="">' +
                         '</div></div></div>';
                     swiper.appendSlide(text);
                     console.log(locationLatLng[j][2]);

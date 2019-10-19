@@ -14,6 +14,7 @@ $(document).on("click", '.saveBtn', function (event) {
 })
 
 function saveProperty(line1, line2) {
+    // console.log(line1,line2);
     fetch(buildUrl('/savedata', {line1: line1, line2: line2}), {
         method: "get", // *GET, POST, PUT, DELETE, etc.
         mode: "cors", // no-cors, cors, *same-origin
@@ -27,22 +28,22 @@ function saveProperty(line1, line2) {
         redirect: "follow", // manual, *follow, error
         referrer: "no-referrer", // no-referrer, *client
     })
-        .then(function (response) {
-            if (response.status >= 200 && response.status < 300) {
-                return response.text()
-            }
-            throw new Error(response.statusText)
-        })
-        .then(function (data) {
-            if (data.toString() === "Error") {
-                $.notify(data, 'error');
-            } else {
-                $.notify(data, 'success');
-            }
-            console.log(data);
+    .then(function (response) {
+        if (response.status >= 200 && response.status < 300) {
+            return response.text()
+        }
+        throw new Error(response.statusText)
+    })
+    .then(function (data) {
+        if (data.toString() === "Error") {
+            $.notify(data, 'error');
+        } else {
+            $.notify(data, 'success');
+        }
+        console.log(data);
 
 
-        });
+    });
 }
 
 var styles = {
@@ -128,6 +129,7 @@ $(document).ready(function () {
     $("#SaveLink").click(function () {
         saveProperty(gline1, gline2)
     })
+
 });
 
 
@@ -493,7 +495,7 @@ function getlist(postalcode,lat, lng, isVacant) {
                     postData('/allpropertiesList', {
                         lat: lat,
                         lng: lng,
-                        page: i,
+                        page: 1,
                         zip: postalcode
                     }, isVacant);
                 }
@@ -712,7 +714,7 @@ function postData(url = ``, data = {}, isVacant) {
             count_request_completed++;
             let validPropertyList = [];
             let location = [];
-            
+            // totalPages = data.property.length;
             if (data) {
                 bar1.set((count_request_completed / parseInt(totalPages)) * 100);
                 if (count_request_completed == totalPages) {
@@ -754,8 +756,8 @@ function postData(url = ``, data = {}, isVacant) {
                                     '<img width="250px" src="https://maps.googleapis.com/maps/api/streetview?size=100x100&location=' + property["address"]["oneLine"].replace( '#', "") + '&pitch=-0.76&key=AIzaSyAInrucxqh4SXD1SZcpjFIZq9EnDjD-k74" alt="">' +
                                     '</div></div></div>';
                                 swiper.appendSlide(text);
-                                location.push([property["location"]['latitude'], property["location"]['longitude'], property['address']['oneLine']]);
-                                locationLatLng.push([property["location"]['latitude'], property["location"]['longitude'], property['address']['oneLine']]);
+                                location.push([property["location"]['latitude'], property["location"]['longitude'], property['address']['oneLine'],property["address"]["line1"],property["address"]["line2"]]);
+                                locationLatLng.push([property["location"]['latitude'], property["location"]['longitude'], property['address']['oneLine'],property["address"]["line1"],property["address"]["line2"]]);
                             }
                         }
 
@@ -836,7 +838,7 @@ function postData(url = ``, data = {}, isVacant) {
                                 //$(".swiper-wrapper").append(text);
                                 swiper.appendSlide(text);
                                 validPropertyList.push(text);
-                                location.push([property["location"]['latitude'], property["location"]['longitude'], property['address']['oneLine']]);
+                                location.push([property["location"]['latitude'], property["location"]['longitude'], property['address']['oneLine'],property["address"]["line1"],property["address"]["line2"]]);
                                 locationLatLng.push([property["location"]['latitude'], property["location"]['longitude'], property['address']['oneLine'],property["address"]["line1"],property["address"]["line2"]]);
                             } /*else if (result2) {
                                 var text = '<div class="swiper-slide" ajaxlink= "/getOwnerDetail/'+property["address"]["line1"]+'/' +property["address"]["line2"]+'"\>' +
@@ -933,7 +935,7 @@ function b_check_visited_links(link) {
 var ipage = 1;
 
 function getpageData(lat, lng, totalpage) {
-    console.log(postalcode);
+    // console.log(postalcode);
     $.ajax({
         type: 'get',
         async: false,
@@ -981,6 +983,11 @@ function getpageData(lat, lng, totalpage) {
 
 }
 
+$(document).on('click','#SavePro',function(){
+    var line1 = $(this).attr("line1");
+    var line2 = $(this).attr("line2");
+    saveProperty(line1, line2);
+});
 
 var homemarkers = [];
 var swiper;
@@ -990,8 +997,6 @@ var bounds;
 var loc;
 function f(locations) {
     // swiper.init();
-    console.log(locations.length,"locations");
-    console.log(locationLatLng.length,"locationLatLng");
     if(locations.length >= 1){
         lat = locations[1][0];
         lng= locations[1][1];
@@ -1011,15 +1016,20 @@ function f(locations) {
             map: map,
             icon: 'Img/icons/pin_b.png'
         });
+        
+        
         google.maps.event.addListener(markers, 'click', (function (markers, i) {
+            var html = "<a style='color: #007bff;cursor: pointer;font-weight: bold;font-size: 14px;' line1='"+locations[i][3]+"' line2='"+locations[i][4]+"' id='SavePro'>Save Property</a>";
+
+            var content = "<p>"+locations[i][2]+"</p>";
             return function () {
-                infowindow.setContent(locations[i][2]);
+                infowindow.setContent(html);
                 infowindow.open(map, markers);
                 swiper.slideTo(markers.get("id"));
                 swiper.updateSlidesClasses();
             }
         })(markers, i))
-        markers.set("id", homemarkers.length)
+        markers.set("id", homemarkers.length);
         homemarkers.push(markers);
         
         // focusonmarker(0);
@@ -1028,7 +1038,7 @@ function f(locations) {
     // $("#searchCount").text("Property Count :" + locations.length);
 
     map.panToBounds(bounds);
-    console.log(homemarkers.length,"homemarkers");
+    // console.log(homemarkers.length,"homemarkers");
 }
 
 function focusonmarker(i) {
@@ -1694,11 +1704,12 @@ function init() {
                         '<img width="250px" src="https://maps.googleapis.com/maps/api/streetview?size=250x250&location=' + locationLatLng[j][2] + '&pitch=-0.76&key=AIzaSyAInrucxqh4SXD1SZcpjFIZq9EnDjD-k74" alt="">' +
                         '</div></div></div>';
                     swiper.appendSlide(text);
-                    console.log(locationLatLng[j][2]);
+                    
                     google.maps.event.addListener(markers, 'click', (function (markers, j) {
-
+                        var html = "<a style='color: #007bff;cursor: pointer;font-weight: bold;font-size: 14px;' line1='"+locationLatLng[j][3]+"' line2='"+locationLatLng[j][4]+"' id='SavePro'>Save Property</a>";
+                        var content = "<p>"+locationLatLng[j][2]+"</p>";
                         return function () {
-                            infowindow.setContent(locationLatLng[j][2]);
+                            infowindow.setContent(html);
                             infowindow.open(map, markers);
                             swiper.slideTo(markers.get("id"));
                             swiper.updateSlidesClasses();
@@ -1741,8 +1752,10 @@ function init() {
                     console.log(locationLatLng[j][2]);
                     google.maps.event.addListener(markers, 'click', (function (markers, j) {
 
+                        var html = "<a style='color: #007bff;cursor: pointer;font-weight: bold;font-size: 14px;' line1='"+locationLatLng[j][3]+"' line2='"+locationLatLng[j][4]+"' id='SavePro'>Save Property</a>";
+                        var content = "<p>"+locationLatLng[j][2]+"</p>";
                         return function () {
-                            infowindow.setContent(locationLatLng[j][2]);
+                            infowindow.setContent(html);
                             infowindow.open(map, markers);
                             swiper.slideTo(markers.get("id"));
                             swiper.updateSlidesClasses();
@@ -1787,8 +1800,10 @@ function init() {
                     console.log(locationLatLng[j][2]);
                     google.maps.event.addListener(markers, 'click', (function (markers, j) {
 
+                        var html ="<a style='color: #007bff;cursor: pointer;font-weight: bold;font-size: 14px;' line1='"+locationLatLng[j][3]+"' line2='"+locationLatLng[j][4]+"' id='SavePro'>Save Property</a>";
+                        var content = "<p>"+locationLatLng[j][2]+"</p>";
                         return function () {
-                            infowindow.setContent(locationLatLng[j][2]);
+                            infowindow.setContent(html);
                             infowindow.open(map, markers);
                             swiper.slideTo(markers.get("id"));
                             swiper.updateSlidesClasses();

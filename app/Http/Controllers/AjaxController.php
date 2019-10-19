@@ -208,7 +208,10 @@ class AjaxController extends Controller
         $getCurrentUser = User::find($request->user()->id);
         if ($getCurrentUser->IsSavedPropertyRest) {
             $getCurrentUser->SavedPropertyFirstDate = date("Y-m-d H:i:s");
-            $getCurrentUser->IsSavedPropertyRest = false;
+            // $getCurrentUser->IsSavedPropertyRest = false;
+
+            //Added by bhavana
+            $getCurrentUser->IsSavedPropertyRest = $getCurrentUser->IsSavedPropertyRest - 1;
             $getCurrentUser->save();
             $getCurrentUser = User::find($request->user()->id);
         }

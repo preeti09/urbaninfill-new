@@ -256,8 +256,10 @@ class HomeController extends Controller
         if ($request->user()->authorizeRoles(['user'])) {
 
             $Currentuser = User::find($request->user()->id);
+            
             $TimediffFormated = null;
             if(!$Currentuser->IsSavedPropertyRest) {
+               
                 $date1 = new DateTime("now");
                 $getTime = strtotime($Currentuser->SavedPropertyFirstDate . " + " . $request->user()->resttime . " days");
                 $time = date("Y-m-d H:i:s", $getTime);
@@ -273,10 +275,12 @@ class HomeController extends Controller
                     $Currentuser = User::find($request->user()->id);
                 }
             }
+            
             $propertiesList = $Currentuser->properties->sortByDesc(function($col)
             {
                 return $col;
             })->values()->all();
+
             return view('SaveProperties')->with('propertiesList',$propertiesList)->with("Rcout",$Currentuser->savedcount)->with('timeExceed',$TimediffFormated);
         }
         else

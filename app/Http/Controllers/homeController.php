@@ -24,6 +24,47 @@ class HomeController extends Controller
         return view('demo');
     }
 
+    public function parcelBoundaries()
+    {
+        //6227 MCDONALD PARK, PEARLAND,TX 77584
+        $lat = 29.5211712;
+        $long = -95.31132259999998;
+        $areaid = "ZI77584";
+        $location = urlencode($long . ',' . $lat);
+        $url = "https://api.gateway.attomdata.com/areaapi/v2.0.0/boundary/detail?AreaId=" . $areaid . "&debug=True";
+        /*$curl = curl_init(); 
+        curl_setopt_array($curl, array( 
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true, 
+            CURLOPT_ENCODING => "", 
+            CURLOPT_MAXREDIRS => 10, 
+            CURLOPT_TIMEOUT => 30, 
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1, 
+            CURLOPT_CUSTOMREQUEST => "GET", 
+            CURLOPT_HTTPHEADER => array( 
+                "accept: application/json", 
+                "apikey: b93b589b4e663e106cc6ef299be0c2c2", 
+            ), 
+        )); 
+        $response = curl_exec($curl); 
+        dd($response);
+        $err = curl_error($curl); 
+        curl_close($curl); 
+        if ($err) { 
+            dd("cURL Error #:" . $err); 
+        }*/
+        
+        return view('polygon');
+    }
+
+    public function jsonData(){
+        $url2 = base_path()."/public/boundary.json";
+        $res = json_decode(file_get_contents($url2));
+        // dd($res->response->result->package->item[0]->boundary);
+        $poly = $res->response->result->package->item[0]->boundary;
+        return response($poly);
+    }
+
     //Added by bhavana
     public function test(){
         $curl = curl_init(); 

@@ -93,6 +93,7 @@ $(document).ready(function () {
         const lat = $(this).attr("lat");
         const long = $(this).attr("long");
         $("#DetailHref").attr("href","/getOwnerDetail/"+line1+"/"+line2);
+        // $("#DetailPro").attr("href","/getOwnerDetail/"+line1+"/"+line2);
         $('#ModalImg').attr("src", "https://maps.googleapis.com/maps/api/streetview?size=800x400&location=" + (oneline) + "&pitch=-0.76&key=AIzaSyAInrucxqh4SXD1SZcpjFIZq9EnDjD-k74");
         //$('#SaveLink').attr("href","https://maps.googleapis.com/maps/api/streetview?size=800x400&location=" +lat+ "," +long + "&pitch=-0.76&key=AIzaSyAInrucxqh4SXD1SZcpjFIZq9EnDjD-k74");
 
@@ -107,7 +108,7 @@ $(document).ready(function () {
         
         geocoder.geocode( { 'address': oneline}, function(results, status) {
             if (status == 'OK') {
-                // console.log(results[0].geometry.location.lat(),results[0].geometry.location.lng());
+                console.log(results[0].geometry.location.lat(),results[0].geometry.location.lng());
                 
                 Modalmap.setCenter(results[0].geometry.location);
                 var marker = new google.maps.Marker({
@@ -495,7 +496,7 @@ function getlist(postalcode,lat, lng, isVacant) {
                     postData('/allpropertiesList', {
                         lat: lat,
                         lng: lng,
-                        page: 1,
+                        page: i,
                         zip: postalcode
                     }, isVacant);
                 }
@@ -745,7 +746,7 @@ function postData(url = ``, data = {}, isVacant) {
                                 searchCount++;
                                 $('#searchCount').text("Property count : " + searchCount);
                                 $("#poiContent").show();
-                                var text = '<div class="swiper-slide" style="height: 100px;">' +
+                                var text = '<div class="swiper-slide" id="'+property["location"]["latitude"]+','+property["location"]["longitude"]+'" style="height: 100px;">' +
                                     '<div class="box selectPOI">' +
                                     '<span class="h3 hotlineLabel ' + visited + '" target="_blank" lat ="' + property["location"]["latitude"] + '" long = "' + property["location"]["longitude"] + '" line1 = "' + encodeURI(property["address"]["line1"]).replace( '#', "") + '" line2="' + encodeURI(property["address"]["line2"]).replace( '#', "") + '"oneline="' + (property["address"]["oneLine"]).replace( '#', "") + '" > Hot Property </span>' +
                                     '<div class="float-right">' +
@@ -824,7 +825,7 @@ function postData(url = ``, data = {}, isVacant) {
                                 $('#searchCount').text("Property count : " + searchCount);
                                 $("#poiContent").show();
 
-                                var text = '<div class="swiper-slide" style="height: 100px;">' +
+                                var text = '<div class="swiper-slide" id="'+property["location"]["latitude"]+','+property["location"]["longitude"]+'" style="height: 100px;">' +
                                     '<div class="box selectPOI">' +
                                     '<span class="h3 hotlineLabel ' + visited + '" target="_blank" lat ="' + property["location"]["latitude"] + '" long = "' + property["location"]["longitude"] + '" line1 = "' + encodeURI(property["address"]["line1"]).replace( '#', "") + '" line2="' + encodeURI(property["address"]["line2"]).replace( '#', "") + '"oneline="' + (property["address"]["oneLine"]).replace( '#', "") + '" > Hot Property </span>' +
                                     '<div class="float-right">' +
@@ -1017,16 +1018,20 @@ function f(locations) {
             icon: 'Img/icons/pin_b.png'
         });
         
-        
         google.maps.event.addListener(markers, 'click', (function (markers, i) {
             var html = "<a style='color: #007bff;cursor: pointer;font-weight: bold;font-size: 14px;' line1='"+locations[i][3]+"' line2='"+locations[i][4]+"' id='SavePro'>Save Property</a>";
 
+            var html2 = "<br><a href='/getOwnerDetail/"+encodeURI(locations[i][3])+"/"+encodeURI(locations[i][4])+"' style='color: #007bff;cursor: pointer;font-weight: bold;font-size: 14px;' target='_blank' id='DetailPro'>Property Detail</a>";
             var content = "<p>"+locations[i][2]+"</p>";
+            
             return function () {
+                
                 infowindow.setContent(html);
                 infowindow.open(map, markers);
                 swiper.slideTo(markers.get("id"));
+
                 swiper.updateSlidesClasses();
+                
             }
         })(markers, i))
         markers.set("id", homemarkers.length);
@@ -1038,6 +1043,8 @@ function f(locations) {
     // $("#searchCount").text("Property Count :" + locations.length);
 
     map.panToBounds(bounds);
+    map.setOptions({styles: styles['hide']});
+
     // console.log(homemarkers.length,"homemarkers");
 }
 
@@ -1588,7 +1595,7 @@ function resetMarker(){
     $("#searchCount").text("Property Count :" + locationLatLng.length);
     count = locationLatLng.length;
     for(j =0 ;j < count ;j++){
-        var text = '<div class="swiper-slide" style="height: 100px;">' +
+        var text = '<div class="swiper-slide" id="'+locationLatLng[j][0]+','+locationLatLng[j][1]+'" style="height: 100px;">' +
                     '<div class="box selectPOI">' +
                     '<span class="h3 hotlineLabel ' + "visited" + '" target="_blank" lat ="' + locationLatLng[j][0] + '" long = "' + locationLatLng[j][1] + '" line1 = "' + encodeURI(locationLatLng[j][3]) + '" line2="' + encodeURI(locationLatLng[j][4]) + '"oneline="' + (locationLatLng[j][2]).replace( '#', "") + '" > Hot Property </span>' +
                     '<div class="float-right">' +
@@ -1612,15 +1619,11 @@ function init() {
         zoom: 13,
         center: new google.maps.LatLng(lat, lng),
         scrollwheel : true,
-        streetViewControl: true,
-
     };
     map = new google.maps.Map(document.getElementById("map"), myOptions);
 
     marker;
     infowindow = new google.maps.InfoWindow();
-    //console.log(locations);
-
     marker = new google.maps.Marker({
         position: new google.maps.LatLng(lat, lng),
         map: map,
@@ -1647,9 +1650,7 @@ function init() {
             strokeWeight: 1,
         }
     });
-
-        drawingManager.setMap(map);
-   
+    drawingManager.setMap(map);   
     google.maps.event.addListener(drawingManager, 'overlaycomplete', function(e,polygon) {
         all_overlays.push(e);
         setMapOnAll(null);
@@ -1665,7 +1666,6 @@ function init() {
 
             var coordinate = new google.maps.LatLng(locationLatLng[j][0], locationLatLng[j][1]);
             // console.log(coordinate, ' coordinate');
-
             if(e.type == "rectangle"){
                 
                 var boundssss = e.overlay.getBounds();
@@ -1693,7 +1693,7 @@ function init() {
                         map: map,
                         icon: 'Img/icons/pin_b.png'
                     });
-                    var text = '<div class="swiper-slide" style="height: 100px;">' +
+                    var text = '<div class="swiper-slide" id="'+locationLatLng[j][0]+','+locationLatLng[j][1]+'" style="height: 100px;">' +
                         '<div class="box selectPOI">' +
                         '<span class="h3 hotlineLabel ' + "visited" + '" target="_blank" lat ="' + locationLatLng[j][0] + '" long = "' + locationLatLng[j][1] + '" line1 = "' + encodeURI(locationLatLng[j][3]) + '" line2="' + encodeURI(locationLatLng[j][4]) + '"oneline="' + (locationLatLng[j][2]).replace( '#', "") + '" > Hot Property </span>' +
                         '<div class="float-right">' +
@@ -1708,11 +1708,14 @@ function init() {
                     google.maps.event.addListener(markers, 'click', (function (markers, j) {
                         var html = "<a style='color: #007bff;cursor: pointer;font-weight: bold;font-size: 14px;' line1='"+locationLatLng[j][3]+"' line2='"+locationLatLng[j][4]+"' id='SavePro'>Save Property</a>";
                         var content = "<p>"+locationLatLng[j][2]+"</p>";
+                        var html2 = "<br><a href='/getOwnerDetail/"+encodeURI(locationLatLng[j][3])+"/"+encodeURI(locationLatLng[j][4])+"' style='color: #007bff;cursor: pointer;font-weight: bold;font-size: 14px;' target='_blank' id='DetailPro'>Property Detail</a>";
+                        var latLngSlider = locationLatLng[j][0]+","+locationLatLng[j][1];
                         return function () {
                             infowindow.setContent(html);
                             infowindow.open(map, markers);
                             swiper.slideTo(markers.get("id"));
                             swiper.updateSlidesClasses();
+                            
                         }
                     })(markers, j))
                     
@@ -1738,7 +1741,7 @@ function init() {
                         map: map,
                         icon: 'Img/icons/pin_b.png'
                     });
-                    var text = '<div class="swiper-slide" style="height: 100px;">' +
+                    var text = '<div class="swiper-slide" id="'+locationLatLng[j][0]+','+locationLatLng[j][1]+'" style="height: 100px;">' +
                         '<div class="box selectPOI">' +
                         '<span class="h3 hotlineLabel ' + "visited" + '" target="_blank" lat ="' + locationLatLng[j][0] + '" long = "' + locationLatLng[j][1] + '" line1 = "' + encodeURI(locationLatLng[j][3]) + '" line2="' + encodeURI(locationLatLng[j][4]) + '"oneline="' + (locationLatLng[j][2]).replace( '#', "") + '" > Hot Property </span>' +
                         '<div class="float-right">' +
@@ -1749,16 +1752,19 @@ function init() {
                         '<img width="250px" src="https://maps.googleapis.com/maps/api/streetview?size=250x250&location=' + locationLatLng[j][2] + '&pitch=-0.76&key=AIzaSyAInrucxqh4SXD1SZcpjFIZq9EnDjD-k74" alt="">' +
                         '</div></div></div>';
                     swiper.appendSlide(text);
-                    console.log(locationLatLng[j][2]);
+                    
                     google.maps.event.addListener(markers, 'click', (function (markers, j) {
 
                         var html = "<a style='color: #007bff;cursor: pointer;font-weight: bold;font-size: 14px;' line1='"+locationLatLng[j][3]+"' line2='"+locationLatLng[j][4]+"' id='SavePro'>Save Property</a>";
+                        var html2 = "<br><a href='/getOwnerDetail/"+encodeURI(locationLatLng[j][3])+"/"+encodeURI(locationLatLng[j][4])+"' style='color: #007bff;cursor: pointer;font-weight: bold;font-size: 14px;' target='_blank' id='DetailPro'>Property Detail</a>";
                         var content = "<p>"+locationLatLng[j][2]+"</p>";
+                        var latLngSlider = locationLatLng[j][0]+","+locationLatLng[j][1];
                         return function () {
                             infowindow.setContent(html);
                             infowindow.open(map, markers);
                             swiper.slideTo(markers.get("id"));
                             swiper.updateSlidesClasses();
+                           
                         }
                     })(markers, j))
                     
@@ -1786,7 +1792,7 @@ function init() {
                         map: map,
                         icon: 'Img/icons/pin_b.png'
                     });
-                    var text = '<div class="swiper-slide" style="height: 100px;">' +
+                    var text = '<div class="swiper-slide" id="'+locationLatLng[j][0]+','+locationLatLng[j][1]+'" style="height: 100px;">' +
                         '<div class="box selectPOI">' +
                         '<span class="h3 hotlineLabel ' + "visited" + '" target="_blank" lat ="' + locationLatLng[j][0] + '" long = "' + locationLatLng[j][1] + '" line1 = "' + encodeURI(locationLatLng[j][3]) + '" line2="' + encodeURI(locationLatLng[j][4]) + '"oneline="' + (locationLatLng[j][2]).replace( '#', "") + '" > Hot Property </span>' +
                         '<div class="float-right">' +
@@ -1801,7 +1807,9 @@ function init() {
                     google.maps.event.addListener(markers, 'click', (function (markers, j) {
 
                         var html ="<a style='color: #007bff;cursor: pointer;font-weight: bold;font-size: 14px;' line1='"+locationLatLng[j][3]+"' line2='"+locationLatLng[j][4]+"' id='SavePro'>Save Property</a>";
+                        var html2 = "<br><a href='/getOwnerDetail/"+encodeURI(locationLatLng[j][3])+"/"+encodeURI(locationLatLng[j][4])+"' style='color: #007bff;cursor: pointer;font-weight: bold;font-size: 14px;' target='_blank' id='DetailPro'>Property Detail</a>";
                         var content = "<p>"+locationLatLng[j][2]+"</p>";
+                        var latLngSlider = locationLatLng[j][0]+","+locationLatLng[j][1];
                         return function () {
                             infowindow.setContent(html);
                             infowindow.open(map, markers);
@@ -1819,7 +1827,6 @@ function init() {
                 }
             }
         }
-        
     });
 
     /*for (i = 0; i < polys.length; i++) {
@@ -1836,13 +1843,14 @@ function init() {
             polys[i].setMap(map);
         }
     }*/
+
+    map.setOptions({styles: styles['hide']});
+
     $('#map').css('height', '450px');
     return map;
 }
 
-
 //send Email
-
 $("#sendEmail").click((e) => {
     e.preventDefault();
     let i = 0;

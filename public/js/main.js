@@ -71,7 +71,7 @@ var styles = {
         },
         {
             featureType: 'transit',
-            elementType: 'labels..text',
+            elementType: 'labels.text',
             stylers: [{visibility: 'off'}]
         }
     ]

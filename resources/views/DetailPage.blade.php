@@ -258,6 +258,32 @@
             </div>
         </div>
     </div>
+
+
+    <!-- myDetailModal -->
+        <div class="modal fade bd-example-modal-xl" id="myDetailModal"  role="dialog">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Property info</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid" id="detailBody">
+                        
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+     <!-- myDetailModal -->
+
+
 @endsection
 
 
@@ -419,7 +445,7 @@ function postData(url = ``, data = {}, isVacant) {
                         if (property['summary']['propclass']) {
                             if (property['summary']['propclass'].toLowerCase() === "vacant") {
                                 
-                                location.push([property["location"]['latitude'], property["location"]['longitude'], property['address']['oneLine'],property["address"]["line1"],property["address"]["line2"]]);
+                                location.push([property["location"]['latitude'], property["location"]['longitude'], property['address']['oneLine'],property["address"]["line1"],property["address"]["line2"],property]);
                                 locationLatLng.push([property["location"]['latitude'], property["location"]['longitude'], property['address']['oneLine'],property["address"]["line1"],property["address"]["line2"]]);
                             }
                         }
@@ -485,7 +511,7 @@ function postData(url = ``, data = {}, isVacant) {
 
                             if (result || result2 || result3 || result4 || result5 || result6 || result7 || result8 || result9 || result10 || result11 || result12 || result13 || result14 || result15 || result16 || result17 || result18 || result19 || result20 || result21 || result22 || result23 || result24 || result25) {
 
-                                location.push([property["location"]['latitude'], property["location"]['longitude'], property['address']['oneLine'],property["address"]["line1"],property["address"]["line2"]]);
+                                location.push([property["location"]['latitude'], property["location"]['longitude'], property['address']['oneLine'],property["address"]["line1"],property["address"]["line2"],property]);
                                 locationLatLng.push([property["location"]['latitude'], property["location"]['longitude'], property['address']['oneLine'],property["address"]["line1"],property["address"]["line2"]]);
                             } 
 
@@ -527,17 +553,80 @@ function f(locations) {
             icon: '/Img/icons/pin_b.png'
         });
 
-        google.maps.event.addListener(markers, 'click', (function (markers, i) {
-            return function () {
-                infowindow.setContent(locations[i][2]);
+
+        markers.addListener('click', function() {
+        // google.maps.event.addListener(markers, 'click', (function (markers, i) {
+
+             var html = "<div>\
+                            <ul>\
+                            <li style='float: right;width: 100%;'>\
+                            <a style='color: #007bff;cursor: pointer;font-weight: bold;font-size: 14px;float: right;' line1='"+locations[i][3]+"' line2='"+locations[i][4]+"' id='SavePro'>\
+                            <i style='margin-left: 5px;' class='fa fa-save fa-2x'></i></a>\
+                            <a style='color: #007bff;cursor: pointer;font-weight: bold;font-size: 14px;float: right;' id='properyDetail' onclick='getMarkerDetail(this)' line1='"+locations[i][3]+"' line2='"+locations[i][4]+"'><i style='float: right;margin-left: 5px;' class='fa fa-table fa-2x'></i></a>\
+                            </li>\
+                            <li><lable>Property ID : <strong>"+locations[i][5]['identifier']['apnOrig']+"</strong></label></li>\
+                            <li><lable>Use : <strong>"+locations[i][5]['summary']['propclass']+"</strong></label></li>\
+                            <li><lable>Address1 : <strong>"+locations[i][5]['address']['line1']+"</strong></label></li>\
+                            <li><lable>Address2 : <strong>"+locations[i][5]['address']['line2']+"</strong></label></li>\
+                            <li><lable>City : <strong>"+locations[i][5]['address']['locality']+"</strong></label></li>\
+                            <li><lable>Country : <strong>"+locations[i][5]['area']['munname']+"</strong></label></li>\
+                            </ul>\
+                            </div>";
+                            // <a style='color: #007bff;cursor: pointer;font-weight: bold;font-size: 14px;' line1='"+locations[i][3]+"' line2='"+locations[i][4]+"' id='SavePro'>Save Property111</a>
+
+            // return function () {
+                infowindow.setContent(html);
+                infowindow.setPosition(new google.maps.LatLng(locations[i][0], locations[i][1]));
+                infowindow.open(map, this);
+                console.log("testing");
+                // infowindow.setContent(locations[i][2]);
                 // infowindow.open(map, markers);
-                modalOpen(locations[i]);
+                // modalOpen(locations[i]);
                 
-            }
-        })(markers, i))
+            // }
+        })
+
+
+
+        // google.maps.event.addListener(markers, 'click', (function (markers, i) {
+        //     return function () {
+        //         infowindow.setContent(locations[i][2]);
+        //         // infowindow.open(map, markers);
+        //         modalOpen(locations[i]);
+                
+        //     }
+        // })(markers, i))
     }
 
     map.setOptions({styles: styles['hide']});
+}
+
+// added by RK
+function getMarkerDetail(obj){
+    console.log("propertyData detail page",propertyData);
+    var line1 = $(obj).attr("line1");
+    var line2 = $(obj).attr("line2");
+    console.log("line",line1);
+    $('#newloading').show();
+    $.ajax({
+            url: '/DetailResponse/'+line1+'/'+line2,
+            // async: false,//AJAX URL WHERE THE LOGIC HAS BUILD
+            
+            success:function(response) {
+                $('#newloading').hide();
+                $("#myDetailModal").find(".modal-body").html('');
+                // console.log("response",response);
+
+                $("#myDetailModal").find(".modal-body").html(response);
+                $('#myDetailModal').modal('show');
+
+                // $('.ajax-loader').hide();
+                // $(".schoolDetail").html(response);
+            },
+            error:function(e){
+                alert("oops error occured, please try again !");
+            }
+        });
 }
 
 function modalOpen(locationData){

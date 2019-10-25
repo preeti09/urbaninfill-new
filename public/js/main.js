@@ -1036,22 +1036,23 @@ function f(locations) {
             // console.log("markers",markers);
             console.log("0i",i);
             // change by RK
-            var html = "<div>\
-                            <ul>\
-                            <li style='float: right;width: 100%;'>\
-                            <a style='color: #007bff;cursor: pointer;font-weight: bold;font-size: 14px;float: right;' line1='"+locations[i][3]+"' line2='"+locations[i][4]+"' id='SavePro'>\
-                            <i style='margin-left: 5px;' class='fa fa-save fa-2x'></i></a>\
-                            <a style='color: #007bff;cursor: pointer;font-weight: bold;font-size: 14px;float: right;' id='properyDetail' onclick='getMarkerDetail(this)' line1='"+locations[i][3]+"' line2='"+locations[i][4]+"'><i style='float: right;margin-left: 5px;' class='fa fa-table fa-2x'></i></a>\
-                            </li>\
-                            <li><lable>Property ID : <strong>"+locations[i][5]['identifier']['apnOrig']+"</strong></label></li>\
-                            <li><lable>Use : <strong>"+locations[i][5]['summary']['propclass']+"</strong></label></li>\
-                            <li><lable>Address1 : <strong>"+locations[i][5]['address']['line1']+"</strong></label></li>\
-                            <li><lable>Address2 : <strong>"+locations[i][5]['address']['line2']+"</strong></label></li>\
-                            <li><lable>City : <strong>"+locations[i][5]['address']['locality']+"</strong></label></li>\
-                            <li><lable>Country : <strong>"+locations[i][5]['area']['munname']+"</strong></label></li>\
-                            </ul>\
-                            </div>";
-                            // <a style='color: #007bff;cursor: pointer;font-weight: bold;font-size: 14px;' line1='"+locations[i][3]+"' line2='"+locations[i][4]+"' id='SavePro'>Save Property111</a>
+            // var html = "<div>\
+            //                 <ul>\
+            //                 <li style='float: right;width: 100%;'>\
+            //                 <a style='color: #007bff;cursor: pointer;font-weight: bold;font-size: 14px;float: right;' line1='"+locations[i][3]+"' line2='"+locations[i][4]+"' id='SavePro'>\
+            //                 <i style='margin-left: 5px;' class='fa fa-save fa-2x'></i></a>\
+            //                 <a style='color: #007bff;cursor: pointer;font-weight: bold;font-size: 14px;float: right;' id='properyDetail' onclick='getMarkerDetail(this)' line1='"+locations[i][3]+"' line2='"+locations[i][4]+"'><i style='float: right;margin-left: 5px;' class='fa fa-table fa-2x'></i></a>\
+            //                 </li>\
+            //                 <li><lable>Property ID : <strong>"+locations[i][5]['identifier']['apnOrig']+"</strong></label></li>\
+            //                 <li><lable>Use : <strong>"+locations[i][5]['summary']['propclass']+"</strong></label></li>\
+            //                 <li><lable>Address1 : <strong>"+locations[i][5]['address']['line1']+"</strong></label></li>\
+            //                 <li><lable>Address2 : <strong>"+locations[i][5]['address']['line2']+"</strong></label></li>\
+            //                 <li><lable>City : <strong>"+locations[i][5]['address']['locality']+"</strong></label></li>\
+            //                 <li><lable>Country : <strong>"+locations[i][5]['area']['munname']+"</strong></label></li>\
+            //                 </ul>\
+            //                 </div>";
+            
+            var html = "<a style='color: #007bff;cursor: pointer;font-weight: bold;font-size: 14px;' line1='"+locations[i][3]+"' line2='"+locations[i][4]+"' id='SavePro'>Save Property</a>";
 
             var html2 = "<br><a href='/getOwnerDetail/"+encodeURI(locations[i][3])+"/"+encodeURI(locations[i][4])+"' style='color: #007bff;cursor: pointer;font-weight: bold;font-size: 14px;' target='_blank' id='DetailPro'>Property Detail</a>";
             var content = "<p>"+locations[i][2]+"</p>";
@@ -1084,31 +1085,31 @@ function f(locations) {
 }
 
 // added by RK
-function getMarkerDetail(obj){
-    console.log("propertyData",propertyData);
-    var line1 = $(obj).attr("line1");
-    var line2 = $(obj).attr("line2");
-    console.log("line",line1);
-    $('#newloading').show();
-    $("#myDetailModal").find(".modal-body").html('');
-    $.ajax({
-            url: '/DetailResponse/'+line1+'/'+line2,
-            // async: false,//AJAX URL WHERE THE LOGIC HAS BUILD
-            success:function(response) {
-                $('#newloading').hide();
-                // console.log("response",response);
-                $("#myDetailModal").find(".modal-body").html('');
-                $("#myDetailModal").find(".modal-body").html(response);
-                $('#myDetailModal').modal('show');
+// function getMarkerDetail(obj){
+//     console.log("propertyData",propertyData);
+//     var line1 = $(obj).attr("line1");
+//     var line2 = $(obj).attr("line2");
+//     console.log("line",line1);
+//     $('#newloading').show();
+//     $("#myDetailModal").find(".modal-body").html('');
+//     $.ajax({
+//             url: '/DetailResponse/'+line1+'/'+line2,
+//             // async: false,//AJAX URL WHERE THE LOGIC HAS BUILD
+//             success:function(response) {
+//                 $('#newloading').hide();
+//                 // console.log("response",response);
+//                 $("#myDetailModal").find(".modal-body").html('');
+//                 $("#myDetailModal").find(".modal-body").html(response);
+//                 $('#myDetailModal').modal('show');
 
-                // $('.ajax-loader').hide();
-                // $(".schoolDetail").html(response);
-            },
-            error:function(e){
-                alert("oops error occured, please try again !");
-            }
-        });
-}
+//                 // $('.ajax-loader').hide();
+//                 // $(".schoolDetail").html(response);
+//             },
+//             error:function(e){
+//                 alert("oops error occured, please try again !");
+//             }
+//         });
+// }
 
 function focusonmarker(i) {
     // setMapOnAll(null)

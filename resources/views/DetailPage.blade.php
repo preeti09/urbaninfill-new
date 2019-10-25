@@ -252,7 +252,7 @@
                 </div>
                 <div class="modal-footer">
                     <a target="_blank" id="DetailHref"> <button type="button" class="btn btn-primary">Property Detail</button></a>
-                    <button type="button" id="SaveLinkPro" class="btn btn-primary">Save Property</button>
+                    <button type="button" id="SaveLink" class="btn btn-primary">Save Property</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -539,8 +539,7 @@ function f(locations) {
 
     map.setOptions({styles: styles['hide']});
 }
-var gline1;
-var gline2;
+
 function modalOpen(locationData){
     
         const lat = locationData[0];
@@ -549,9 +548,6 @@ function modalOpen(locationData){
         const line2 = locationData[4];
         const oneline = locationData[2];
         console.log(oneline);
-
-        gline1 = line1;
-        gline2 = line2;
         $("#DetailHref").attr("href","/getOwnerDetail/"+line1+"/"+line2);
 
         $('#ModalImg').attr("src", "https://maps.googleapis.com/maps/api/streetview?size=800x400&location=" + (oneline) + "&pitch=-0.76&key=AIzaSyAInrucxqh4SXD1SZcpjFIZq9EnDjD-k74");
@@ -584,9 +580,5 @@ function modalOpen(locationData){
 
         $('#MarkerModal').modal('show')
 }
-
- $("#SaveLinkPro").click(function () {
-        saveProperty(gline1, gline2)
-    })
 </script>
 @endsection

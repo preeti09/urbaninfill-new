@@ -19,6 +19,18 @@
     
     @yield('head')
     <title>@yield('title')</title>
+    <style type="text/css">
+        .newloader {
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            background: url('{{url('/Img/loader.gif')}}') 50% 50% no-repeat rgb(249,249,249);
+            opacity: .8;
+        }
+    </style>
 </head>
 <body>
 
@@ -72,6 +84,7 @@
 </div>
 -->
 <div id="loading"></div>
+<div id="newloading" class="newloader" style="display: none"></div>
 <div id="isLoaded">
 
 

@@ -19,6 +19,7 @@ Route::get('/api_test', 'homeController@test');
 Route::get('/parcel', 'homeController@parcelBoundaries');
 Route::get('/jsonData', 'homeController@jsonData');
 Route::get('/get/AjaxResponse/{line1}/{line2}', 'AjaxController@getAjaxResponse');
+Route::get('/DetailResponse/{line1}/{line2}', 'AjaxController@getDetailResponse');
 ////////
 Route::get('/hpl2', 'homeController@homehpl2');
 Route::get('/typesearch', 'homeController@typesearch');

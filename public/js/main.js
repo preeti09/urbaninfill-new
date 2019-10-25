@@ -615,7 +615,7 @@ function postTypeData(url = ``, data = {}) {
             throw new Error(response.statusText)
         })
         .then(function (data) {
-            console.log(data);
+            console.log("pro",data);
 
             count_request_completed++;
             let validPropertyList = [];
@@ -757,7 +757,7 @@ function postData(url = ``, data = {}, isVacant) {
                                     '<img width="250px" src="https://maps.googleapis.com/maps/api/streetview?size=100x100&location=' + property["address"]["oneLine"].replace( '#', "") + '&pitch=-0.76&key=AIzaSyAInrucxqh4SXD1SZcpjFIZq9EnDjD-k74" alt="">' +
                                     '</div></div></div>';
                                 swiper.appendSlide(text);
-                                location.push([property["location"]['latitude'], property["location"]['longitude'], property['address']['oneLine'],property["address"]["line1"],property["address"]["line2"]]);
+                                location.push([property["location"]['latitude'], property["location"]['longitude'], property['address']['oneLine'],property["address"]["line1"],property["address"]["line2"],property]);
                                 locationLatLng.push([property["location"]['latitude'], property["location"]['longitude'], property['address']['oneLine'],property["address"]["line1"],property["address"]["line2"]]);
                             }
                         }
@@ -839,8 +839,8 @@ function postData(url = ``, data = {}, isVacant) {
                                 //$(".swiper-wrapper").append(text);
                                 swiper.appendSlide(text);
                                 validPropertyList.push(text);
-                                location.push([property["location"]['latitude'], property["location"]['longitude'], property['address']['oneLine'],property["address"]["line1"],property["address"]["line2"]]);
-                                locationLatLng.push([property["location"]['latitude'], property["location"]['longitude'], property['address']['oneLine'],property["address"]["line1"],property["address"]["line2"]]);
+                                location.push([property["location"]['latitude'], property["location"]['longitude'], property['address']['oneLine'],property["address"]["line1"],property["address"]["line2"],property]);
+                                locationLatLng.push([property["location"]['latitude'], property["location"]['longitude'], property['address']['oneLine'],property["address"]["line1"],property["address"]["line2"],property]);
                             } /*else if (result2) {
                                 var text = '<div class="swiper-slide" ajaxlink= "/getOwnerDetail/'+property["address"]["line1"]+'/' +property["address"]["line2"]+'"\>' +
                                     '<div class="box selectPOI" id="5">' +
@@ -907,6 +907,9 @@ function postData(url = ``, data = {}, isVacant) {
 
                 }
                 // console.log(locationLatLng.length);
+                console.log("pro1",data);
+                propertyData = data;
+                // console.log("count",location.length);
                 f(location);
 
             }
@@ -937,6 +940,7 @@ var ipage = 1;
 
 function getpageData(lat, lng, totalpage) {
     // console.log(postalcode);
+    console.log("totalpage",totalpage);
     $.ajax({
         type: 'get',
         async: false,
@@ -996,8 +1000,10 @@ var markers;
 var infowindow;
 var bounds;
 var loc;
+var propertyData;
 function f(locations) {
     // swiper.init();
+    // console.log("my locations",locations);
     if(locations.length >= 1){
         lat = locations[1][0];
         lng= locations[1][1];
@@ -1009,31 +1015,60 @@ function f(locations) {
     bounds.extend(loc);
     swiper.slideTo(swiper.initialSlide);
     swiper.update();
+    // 
     for (let i = 0; i < locations.length; i++) {
         
         var markers = new google.maps.Marker({
             position: new google.maps.LatLng(locations[i][0], locations[i][1]),
             animation: google.maps.Animation.DROP,
             map: map,
-            icon: 'Img/icons/pin_b.png'
+            icon: 'Img/icons/pin_b.png',
+            
         });
-        
-        google.maps.event.addListener(markers, 'click', (function (markers, i) {
-            var html = "<a style='color: #007bff;cursor: pointer;font-weight: bold;font-size: 14px;' line1='"+locations[i][3]+"' line2='"+locations[i][4]+"' id='SavePro'>Save Property</a>";
+        markers.locations = locations[i];
+        markers.addListener('click', function() {
+        // google.maps.event.addListener(markers, 'click', function (markers, j) {
+            console.log(markers, 'markers');
+            console.log(i, 'my i');
+            // return;
+            // var markerDetail = getMarkerDetail(locations[i][3],locations[i][4]);
+            // console.log("markerDetail",markerDetail);
+            // console.log("markers",markers);
+            console.log("0i",i);
+            // change by RK
+            var html = "<div>\
+                            <ul>\
+                            <li style='float: right;width: 100%;'>\
+                            <a style='color: #007bff;cursor: pointer;font-weight: bold;font-size: 14px;float: right;' line1='"+locations[i][3]+"' line2='"+locations[i][4]+"' id='SavePro'>\
+                            <i style='margin-left: 5px;' class='fa fa-save fa-2x'></i></a>\
+                            <a style='color: #007bff;cursor: pointer;font-weight: bold;font-size: 14px;float: right;' id='properyDetail' onclick='getMarkerDetail(this)' line1='"+locations[i][3]+"' line2='"+locations[i][4]+"'><i style='float: right;margin-left: 5px;' class='fa fa-table fa-2x'></i></a>\
+                            </li>\
+                            <li><lable>Property ID : <strong>"+locations[i][5]['identifier']['apnOrig']+"</strong></label></li>\
+                            <li><lable>Use : <strong>"+locations[i][5]['summary']['propclass']+"</strong></label></li>\
+                            <li><lable>Address1 : <strong>"+locations[i][5]['address']['line1']+"</strong></label></li>\
+                            <li><lable>Address2 : <strong>"+locations[i][5]['address']['line2']+"</strong></label></li>\
+                            <li><lable>City : <strong>"+locations[i][5]['address']['locality']+"</strong></label></li>\
+                            <li><lable>Country : <strong>"+locations[i][5]['area']['munname']+"</strong></label></li>\
+                            </ul>\
+                            </div>";
+                            // <a style='color: #007bff;cursor: pointer;font-weight: bold;font-size: 14px;' line1='"+locations[i][3]+"' line2='"+locations[i][4]+"' id='SavePro'>Save Property111</a>
 
             var html2 = "<br><a href='/getOwnerDetail/"+encodeURI(locations[i][3])+"/"+encodeURI(locations[i][4])+"' style='color: #007bff;cursor: pointer;font-weight: bold;font-size: 14px;' target='_blank' id='DetailPro'>Property Detail</a>";
             var content = "<p>"+locations[i][2]+"</p>";
             
-            return function () {
+            // return function () {
                 
                 infowindow.setContent(html);
-                infowindow.open(map, markers);
+                // infowindow.setPosition(markers.getPosition());
+                infowindow.setPosition(new google.maps.LatLng(locations[i][0], locations[i][1]));
+                // infowindow.open(map, markers);
+                infowindow.open(map, this);
                 swiper.slideTo(markers.get("id"));
 
                 swiper.updateSlidesClasses();
                 
-            }
-        })(markers, i))
+            // }
+        });
         markers.set("id", homemarkers.length);
         homemarkers.push(markers);
         
@@ -1046,6 +1081,33 @@ function f(locations) {
     map.setOptions({styles: styles['hide']});
 
     // console.log(homemarkers.length,"homemarkers");
+}
+
+// added by RK
+function getMarkerDetail(obj){
+    console.log("propertyData",propertyData);
+    var line1 = $(obj).attr("line1");
+    var line2 = $(obj).attr("line2");
+    console.log("line",line1);
+    $('#newloading').show();
+    $("#myDetailModal").find(".modal-body").html('');
+    $.ajax({
+            url: '/DetailResponse/'+line1+'/'+line2,
+            // async: false,//AJAX URL WHERE THE LOGIC HAS BUILD
+            success:function(response) {
+                $('#newloading').hide();
+                // console.log("response",response);
+                $("#myDetailModal").find(".modal-body").html('');
+                $("#myDetailModal").find(".modal-body").html(response);
+                $('#myDetailModal').modal('show');
+
+                // $('.ajax-loader').hide();
+                // $(".schoolDetail").html(response);
+            },
+            error:function(e){
+                alert("oops error occured, please try again !");
+            }
+        });
 }
 
 function focusonmarker(i) {

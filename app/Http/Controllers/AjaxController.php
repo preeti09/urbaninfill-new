@@ -542,6 +542,67 @@ class AjaxController extends Controller
             return redirect('/logout');
     }
 
+    //Added by RK
+    public function getDetailResponse(Request $request, $line1, $line2){
+        if ($request->user()->authorizeRoles(['user'])) {
+            $result = $this->getallevent(urlencode($line1), urlencode($line2));
+
+            $AVMResult = $this->getdetailmortgageowner(urlencode($line1), urlencode($line2));
+            
+            $information = [];
+            
+            $psArray = array();
+            foreach ($AVMResult["property"] as $key => $data) {
+                $AssessmentHistory = $this->getAssessmentHistory($data["identifier"]["obPropId"]);
+                if ($AssessmentHistory["property"] == null) {
+
+                } else
+                    $psArray[$data["identifier"]["obPropId"]] = $AssessmentHistory["property"][0]["assessmenthistory"];
+            }
+            
+            $fullName = 'Home Owner';
+            if (array_key_exists('owner1', $AVMResult["property"][0]["owner"])) {
+                $fullName = '';
+                foreach ($AVMResult["property"][0]["owner"]["owner1"] as $key => $value) {
+                    $fullName = $fullName . $value . " ";
+                }
+            }
+
+            // url encode the address
+            $address = urlencode($line1 . ' ' . $line2);
+
+            // google map geocode api url
+            $url = "https://maps.googleapis.com/maps/api/geocode/json?address={$address}&key=AIzaSyCPAVKxutIiPNXJr8UeB2wwSrzrFA3-GuI";
+
+            // get the json response
+            $resp_json = file_get_contents($url);
+
+            // decode the json
+            $resp = json_decode($resp_json, true);
+            $lati = 0;
+            $longi=0;
+
+            // response status will be 'OK', if able to geocode given address
+            if ($resp['status'] == 'OK') {
+
+                // get the important data
+                $lati = isset($resp['results'][0]['geometry']['location']['lat']) ? $resp['results'][0]['geometry']['location']['lat'] : "";
+                $longi = isset($resp['results'][0]['geometry']['location']['lng']) ? $resp['results'][0]['geometry']['location']['lng'] : "";
+            }
+
+            
+            $result["assessment"]= $psArray;
+            $result["ownerinfo"]= $information;
+            // dd($result);
+
+            // return json_encode($result);
+            return view('ajax_response')->with('result', $result)->with("AVMResult", $AVMResult)->with("Assessment", $psArray)->with("OwnerInfo", $information)->with('fullname', $fullName)->with('fulladdress', str_replace("#","",($line1 . ' ' . $line2)))->with('lat',$lati)->with ('longi',$longi);
+
+            
+        } else
+            return false;
+    }
+
     private function getallevent($line1, $line2)
     {
         $url = $this->obapiurl . '/propertyapi/v1.0.0/allevents/detail?address1=' . $line1 . '&address2=' . $line2 . '&debug=True';

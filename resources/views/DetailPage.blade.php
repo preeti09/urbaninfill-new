@@ -539,7 +539,7 @@ function postData(url = ``, data = {}, isVacant) {
 }
 
 function f(locations) {
-    console.log(locations.length);
+    // console.log(locations.length);
 
     loc = new google.maps.LatLng("{{$lat}}" ,"{{$longi}}");
     
@@ -578,7 +578,7 @@ function f(locations) {
                 infowindow.setContent(html);
                 infowindow.setPosition(new google.maps.LatLng(locations[i][0], locations[i][1]));
                 infowindow.open(map, this);
-                console.log("testing");
+                // console.log("testing");
                 // infowindow.setContent(locations[i][2]);
                 // infowindow.open(map, markers);
                 // modalOpen(locations[i]);
@@ -603,10 +603,10 @@ function f(locations) {
 
 // added by RK
 function getMarkerDetail(obj){
-    console.log("propertyData detail page",propertyData);
+    // console.log("propertyData detail page",propertyData);
     var line1 = $(obj).attr("line1");
     var line2 = $(obj).attr("line2");
-    console.log("line",line1);
+    // console.log("line",line1);
     $('#newloading').show();
     $.ajax({
             url: '/DetailResponse/'+line1+'/'+line2,
@@ -624,6 +624,7 @@ function getMarkerDetail(obj){
                 // $(".schoolDetail").html(response);
             },
             error:function(e){
+                $('#newloading').hide();
                 alert("oops error occured, please try again !");
             }
         });

@@ -615,7 +615,7 @@ function postTypeData(url = ``, data = {}) {
             throw new Error(response.statusText)
         })
         .then(function (data) {
-            console.log("pro",data);
+            // console.log("pro",data);
 
             count_request_completed++;
             let validPropertyList = [];
@@ -907,7 +907,7 @@ function postData(url = ``, data = {}, isVacant) {
 
                 }
                 // console.log(locationLatLng.length);
-                console.log("pro1",data);
+                // console.log("pro1",data);
                 propertyData = data;
                 // console.log("count",location.length);
                 f(location);
@@ -1028,13 +1028,13 @@ function f(locations) {
         markers.locations = locations[i];
         markers.addListener('click', function() {
         // google.maps.event.addListener(markers, 'click', function (markers, j) {
-            console.log(markers, 'markers');
-            console.log(i, 'my i');
+            // console.log(markers, 'markers');
+            // console.log(i, 'my i');
             // return;
             // var markerDetail = getMarkerDetail(locations[i][3],locations[i][4]);
             // console.log("markerDetail",markerDetail);
             // console.log("markers",markers);
-            console.log("0i",i);
+            // console.log("0i",i);
             // change by RK
             // var html = "<div>\
             //                 <ul>\

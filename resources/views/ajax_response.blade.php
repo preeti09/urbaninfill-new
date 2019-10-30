@@ -8,16 +8,16 @@
                         <h7>{{$WholePropertydata["address"]["line2"]}}</h7>
                     </div>
                     <div>
-                        <!-- <div class="row">
+                        <div class="row">
                             <div class="col-6">
                                 <img width="100%" height="400" src="https://maps.googleapis.com/maps/api/streetview?size=800x400&location={{$fulladdress}}&pitch=0&fov=120&key=AIzaSyAInrucxqh4SXD1SZcpjFIZq9EnDjD-k74" alt="">
                             </div>
                             <div class="col-6">
-                                <div class=" map" id="Mymap" style="width: 100%;height: 100%">
+                                <div class=" map" id="Mymap1" style="width: 100%;height: 100%">
 
                                 </div>
                             </div>
-                        </div> -->
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -204,63 +204,63 @@
         @endif
 
 <script type="text/javascript">
-//  init();
+ init1();
 
-// var map;
-// function init() {
+var map1;
+function init1() {
 
     
-//     const myOptions = {
-//         enableHighAccuracy: true,
-//         zoom: 13,
-//         center: new google.maps.LatLng( "{{$lat}}" ,"{{$longi}}"),
-//         scrollwheel:true
-//     };
-//      map = new google.maps.Map(document.getElementById("Mymap"), myOptions);
+    const myOptions = {
+        enableHighAccuracy: true,
+        zoom: 13,
+        center: new google.maps.LatLng( "{{$lat}}" ,"{{$longi}}"),
+        scrollwheel:true
+    };
+     map1 = new google.maps.Map(document.getElementById("Mymap1"), myOptions);
 
-//     const marker = new google.maps.Marker({
-//         position: new google.maps.LatLng("{{$lat}}" ,"{{$longi}}"),
-//         map: map,
-//         animation: google.maps.Animation.DROP
-//     });
-// }   
+    const marker1 = new google.maps.Marker({
+        position: new google.maps.LatLng("{{$lat}}" ,"{{$longi}}"),
+        map: map1,
+        animation: google.maps.Animation.DROP
+    });
+}   
 
-// f(locationLatLng);
-// function f(locations) {
-//     console.log(locations.length);
-//     var infowindow = new google.maps.InfoWindow();
-//     for (let i = 0; i < locations.length; i++) {
-//         var markers = new google.maps.Marker({
-//             position: new google.maps.LatLng(locations[i][0], locations[i][1]),
-//             animation: google.maps.Animation.DROP,
-//             map: map,
-//             icon: '/Img/icons/pin_b.png'
-//         });
-//         google.maps.event.addListener(markers, 'click', (function (markers, i) {
-//             return function () {
-//                 infowindow.setContent(locations[i][2]);
-//                 infowindow.open(map, markers);
-//                /* $.ajax({
-//                     url:"/get/AjaxResponse/"+locations[i][3]+"/"+locations[i][4],
-//                     type:"get",
-//                     success:function(resp){
-//                         $("#proResponse").empty();
-//                         if(resp){
-//                             $("#proResponse").append(resp);
-//                         }
+f1(locationLatLng);
+function f1(locations) {
+    // console.log(locations.length);
+    var infowindow = new google.maps.InfoWindow();
+    for (let i = 0; i < locations.length; i++) {
+        var markers1 = new google.maps.Marker({
+            position: new google.maps.LatLng(locations[i][0], locations[i][1]),
+            animation: google.maps.Animation.DROP,
+            map: map1,
+            icon: '/Img/icons/pin_b.png'
+        });
+        google.maps.event.addListener(markers1, 'click', (function (markers1, i) {
+            return function () {
+                infowindow.setContent(locations[i][2]);
+                infowindow.open(map1, markers1);
+               /* $.ajax({
+                    url:"/get/AjaxResponse/"+locations[i][3]+"/"+locations[i][4],
+                    type:"get",
+                    success:function(resp){
+                        $("#proResponse").empty();
+                        if(resp){
+                            $("#proResponse").append(resp);
+                        }
                        
-//                     },
-//                     error:function(xhr){
-//                         console.log(xhr);
-//                     }
-//                 });*/
+                    },
+                    error:function(xhr){
+                        console.log(xhr);
+                    }
+                });*/
                 
-//             }
-//         })(markers, i))
-//     }
+            }
+        })(markers1, i))
+    }
 
 
-// }
+}
 </script>
 
 
